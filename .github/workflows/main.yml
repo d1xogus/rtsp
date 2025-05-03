@@ -38,6 +38,6 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           script: |
-            cd /home/ec2-user/stream/streaam
+            cd /home/ec2-user/stream/stream
             git pull origin master
             ./gradlew clean build -x test
