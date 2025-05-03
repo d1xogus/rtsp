@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: "./application.yml"
-          target: "/home/ubuntu/stream/src/main/resources/"
+          target: "/home/ubuntu/rtsp/src/main/resources/"
 
       # Step 4: SSH to EC2 and build application
       - name: Build application on EC2
@@ -38,6 +38,6 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/stream
+            cd /home/ubuntu/rtsp
             git pull origin master
             ./gradlew clean build -x test
