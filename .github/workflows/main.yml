@@ -40,4 +40,5 @@ jobs:
           script: |
             cd /home/ubuntu/rtsp
             git pull origin master
+            chmod +x ./gradlew
             ./gradlew clean build -x test
