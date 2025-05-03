@@ -1,0 +1,43 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest # 실행될 인스턴스 OS와 버전
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Decode application.yml
+      - name: Decode application.yml
+        run: |
+          echo ${{ secrets.YML }} | base64 --decode > application.yml
+          ls -al
+
+      # Step 3: Copy application.yml to EC2
+      - name: Copy application.yml to EC2
+        uses: appleboy/scp-action@v0.1.5
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          source: "./application.yml"
+          target: "/home/ec2-user/stream/stream/src/main/resources/"
+
+      # Step 4: SSH to EC2 and build application
+      - name: Build application on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          script: |
+            cd /home/ec2-user/stream/streaam
+            git pull origin master
+            ./gradlew clean build -x test
