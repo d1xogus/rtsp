@@ -29,6 +29,7 @@ public class StreamController {
     @PostMapping("/start")
     public ResponseEntity<String> startStream(@RequestBody StreamRequestDTO request) {
         try {
+            log.info("start");
             String rtspUrl = String.format("rtsp://%s:%s@%s:554/Streaming/Channels/101/",
                     request.getCameraId(),
                     request.getCameraPassword(),
