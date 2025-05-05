@@ -49,7 +49,7 @@ public class StreamController {
             List<String> command = List.of(
                     "/bin/bash", "-c",
                     String.format("cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
-                                    "./samples/kvsWebrtcClientMasterGstSample --verbose %s video-only rtspsrc %s",
+                                    "./samples/kvsWebrtcClientMasterGstSample %s video-only rtspsrc %s",
                             request.getStreamName(), rtspUrl)
             );
 
