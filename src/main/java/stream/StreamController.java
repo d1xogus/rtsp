@@ -48,6 +48,7 @@ public class StreamController {
             Map<String, String> env = builder.environment();
             env.put("AWS_ACCESS_KEY_ID", accessKey);
             env.put("AWS_SECRET_ACCESS_KEY", secretKey);
+            env.put("AWS_DEFAULT_REGION", region);
 
             builder.redirectErrorStream(true);
             Process process = builder.start();
