@@ -48,9 +48,13 @@ public class StreamController {
 
             List<String> command = List.of(
                     "/bin/bash", "-c",
-                    String.format("cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
-                                    "./samples/kvsWebrtcClientMasterGstSample %s --trickle-ice video-only rtspsrc %s",
-                            request.getStreamName(), rtspUrl)
+                    String.format(
+                            "cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
+                                    "./samples/kvsWebrtcClientMasterGstSample --channel-name \"%s\" --trickle-ice --video-only " +
+                                    "\"rtspsrc location=%s latency=0 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! " +
+                                    "x264enc tune=zerolatency bitrate=1000 speed-preset=ultrafast ! rtph264pay config-interval=1 pt=96 ! appsink\"",
+                            request.getStreamName(), rtspUrl
+                    )
             );
 
             ProcessBuilder builder = new ProcessBuilder(command);
