@@ -25,6 +25,8 @@ public class StreamController {
     private String accessKey;
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
     @PostMapping("/start")
     public ResponseEntity<String> startStream(@RequestBody StreamRequestDTO request) {
