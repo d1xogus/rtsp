@@ -103,6 +103,9 @@ public class StreamController {
                 CreateSignalingChannelRequest createRequest = CreateSignalingChannelRequest.builder()
                         .channelName(streamName)
                         .channelType(ChannelType.SINGLE_MASTER)
+                        .singleMasterConfiguration(SingleMasterConfiguration.builder()
+                                .messageTtlSeconds(60)  // 원하는 유지 시간 설정 가능
+                                .build())
                         .build();
                 client.createSignalingChannel(createRequest);
                 log.info("Created signaling channel: {}", streamName);
