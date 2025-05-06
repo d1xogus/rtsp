@@ -9,12 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
-import software.amazon.awssdk.services.kinesisvideo.model.*;
-
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,16 +25,11 @@ public class StreamController {
     private String accessKey;
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
-    @Value("${cloud.aws.region.static}")
-    private String region;
 
     @PostMapping("/start")
     public ResponseEntity<String> startStream(@RequestBody StreamRequestDTO request) {
         try {
             log.info("start");
-
-            //ensureSignalingChannelExists(request.getStreamName());
-
             String rtspUrl = String.format("rtsp://%s:%s@%s:554/Streaming/Channels/101/",
                     request.getCameraId(),
                     request.getCameraPassword(),
@@ -57,7 +46,6 @@ public class StreamController {
             Map<String, String> env = builder.environment();
             env.put("AWS_ACCESS_KEY_ID", accessKey);
             env.put("AWS_SECRET_ACCESS_KEY", secretKey);
-            env.put("AWS_DEFAULT_REGION", region);
 
             builder.redirectErrorStream(true);
             Process process = builder.start();
@@ -79,39 +67,6 @@ public class StreamController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to start stream: " + e.getMessage());
-        }
-    }
-
-    private void ensureSignalingChannelExists(String streamName) {
-        try (KinesisVideoClient client = KinesisVideoClient.builder()
-                .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
-                ))
-                .build()) {
-
-            ListSignalingChannelsResponse response = client.listSignalingChannels(
-                    ListSignalingChannelsRequest.builder().build()
-            );
-
-            List<ChannelInfo> channels = response.channelInfoList();
-
-            boolean exists = channels.stream()
-                    .anyMatch(c -> c.channelName().equals(streamName));
-
-            if (!exists) {
-                CreateSignalingChannelRequest createRequest = CreateSignalingChannelRequest.builder()
-                        .channelName(streamName)
-                        .channelType(ChannelType.SINGLE_MASTER)
-                        .singleMasterConfiguration(SingleMasterConfiguration.builder()
-                                .messageTtlSeconds(60)  // 원하는 유지 시간 설정 가능
-                                .build())
-                        .build();
-                client.createSignalingChannel(createRequest);
-                log.info("Created signaling channel: {}", streamName);
-            } else {
-                log.info("Signaling channel already exists: {}", streamName);
-            }
         }
     }
 }
