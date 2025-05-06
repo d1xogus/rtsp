@@ -48,17 +48,9 @@ public class StreamController {
 
             List<String> command = List.of(
                     "/bin/bash", "-c",
-                    String.format(
-                            "cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
-                                    "./samples/kvsWebrtcClientMasterGstSample " +
-                                    "--channel-name \"%s\" " +       // 값을 따옴표로 감쌈
-                                    "--trickle-ice " +
-                                    "--use-camera " +
-                                    "--camera-source \"%s\" " +
-                                    "--video-only",
-                            request.getStreamName(),
-                            rtspUrl
-                    )
+                    String.format("cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
+                                    "./samples/kvsWebrtcClientMasterGstSample %s --trickle-ice video-only rtspsrc %s",
+                            request.getStreamName(), rtspUrl)
             );
 
             ProcessBuilder builder = new ProcessBuilder(command);
