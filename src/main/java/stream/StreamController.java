@@ -51,7 +51,7 @@ public class StreamController {
                     String.format(
                             "cd ~/amazon-kinesis-video-streams-webrtc-sdk-c/build && " +
                                     "./samples/kvsWebrtcClientMasterGstSample " +
-                                    "--channel-name=%s " +
+                                    "--channel-name \"%s\" " +       // 값을 따옴표로 감쌈
                                     "--trickle-ice " +
                                     "--use-camera " +
                                     "--camera-source \"%s\" " +
